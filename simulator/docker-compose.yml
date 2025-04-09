@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  mininet:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mininet_simulation
+    privileged: true
+    network_mode: host
+    volumes:
+      - ./start_simulation.py:/opt/start_simulation.py
+    stdin_open: true
+    tty: true
