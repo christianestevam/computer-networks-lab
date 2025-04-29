@@ -1,8 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-# Carregar dados de latência
-latencies = np.loadtxt("latency.txt")
+# Carregar dados de latência do diretório correto
+latencies = np.loadtxt("output/latency.txt")
 
 # Dados simulados para mensagens e energia
 nodes = np.arange(1, 11)
@@ -16,7 +16,7 @@ plt.title('Distribuição da Latência Média de Mensagens MQTT')
 plt.xlabel('Latência (segundos)')
 plt.ylabel('Frequência')
 plt.grid(True)
-plt.savefig('latency_distribution.png')
+plt.savefig('output/latency_distribution.png')
 plt.close()
 
 # Gráfico 2: Mensagens enviadas por nó
@@ -26,7 +26,7 @@ plt.title('Número de Mensagens Enviadas por Nó')
 plt.xlabel('ID do Nó')
 plt.ylabel('Mensagens Enviadas')
 plt.grid(True)
-plt.savefig('messages_sent.png')
+plt.savefig('output/messages_sent.png')
 plt.close()
 
 # Gráfico 3: Consumo de energia estimado
@@ -36,5 +36,5 @@ plt.title('Consumo de Energia Estimado por Nó')
 plt.xlabel('ID do Nó')
 plt.ylabel('Energia (Joules)')
 plt.grid(True)
-plt.savefig('energy_consumption.png')
+plt.savefig('output/energy_consumption.png')
 plt.close()
