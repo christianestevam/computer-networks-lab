@@ -2,7 +2,7 @@ FROM ubuntu:20.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Atualizar e instalar dependências básicas
+# Install basic dependencies, including lsb-release, openvswitch, and help2man
 RUN apt-get update -y && \
     apt-get install -y \
     python3 \
@@ -19,27 +19,52 @@ RUN apt-get update -y && \
     telnet \
     build-essential \
     python3-dev \
+    lsb-release \
     openvswitch-switch \
-    && apt-get clean
+    openvswitch-common \
+    python3-pyparsing \
+    python3-pexpect \
+    iperf \
+    perl \
+    help2man \
+    && apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
-# Criar link simbólico para python
+# Create symbolic link for python
 RUN ln -sf /usr/bin/python3 /usr/bin/python
 
-# Instalar Mininet a partir do código-fonte
-RUN git clone https://github.com/mininet/mininet.git /opt/mininet && \
-    cd /opt/mininet && \
-    git checkout 2.3.1 && \
-    /opt/mininet/util/install.sh -nfv
+# Copy the local Mininet repository
+COPY mininet /opt/mininet
 
-# Instalar dependências Python adicionais
-RUN pip3 install matplotlib numpy scipy
+# Verify that install.sh exists and is executable
+RUN test -f /opt/mininet/util/install.sh || (echo "Error: install.sh not found in /opt/mininet/util" && exit 1) && \
+    chmod +x /opt/mininet/util/install.sh
 
-# Copiar o script de simulação
+# Install Mininet manually with make install
+RUN cd /opt/mininet && \
+    make install && \
+    rm -rf /opt/mininet/.git
+
+# Copy the local POX repository
+COPY pox /opt/pox
+
+# Install additional Python dependencies (incluindo seaborn)
+RUN pip3 install --no-cache-dir matplotlib numpy scipy networkx seaborn
+
+# Create directory for results
+RUN mkdir -p /opt/results
+
+# Copy the simulation script
 COPY start_simulation.py /opt/start_simulation.py
 
-# Expor porta (opcional)
-EXPOSE 8080
+# Create a startup script to initialize OVS
+RUN echo '#!/bin/bash\n\
+service openvswitch-switch start\n\
+python3 /opt/start_simulation.py' > /start.sh && \
+    chmod +x /start.sh
 
-# Comando de inicialização
-CMD service openvswitch-switch start && \
-    python3 /opt/start_simulation.py
+# Expose port for the server
+EXPOSE 8000
+
+# Command to start OVS and the simulation
+CMD ["/start.sh"]

@@ -20,7 +20,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Instalar matplotlib e outras bibliotecas Python
-RUN pip3 install matplotlib numpy
+RUN pip3 install matplotlib numpy pandas
 
 # Clonar e compilar ns-3
 RUN git clone https://gitlab.com/nsnam/ns-3-dev.git /ns-3-dev
