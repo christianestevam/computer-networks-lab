@@ -1,0 +1,10 @@
+services:
+  ns3-simulation:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./output:/ns-3-dev/output
+    environment:
+      - TERM=xterm-256color
+    command: bash -c "./ns3 run scratch/video_streaming_qos"
