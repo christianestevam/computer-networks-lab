@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: counter-app-deployment
+  namespace: docker-k8s-lab
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: counter-app
+  template:
+    metadata:
+      labels:
+        app: counter-app
+    spec:
+      containers:
+      - name: counter-app
+        image: counter-app:latest
+        imagePullPolicy: Never  # Usar imagem local do Docker Desktop
+        ports:
+        - containerPort: 5000
+        env:
+        - name: REDIS_HOST
+          value: "redis-service"
+        - name: REDIS_PORT
+          value: "6379"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 10
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 10
